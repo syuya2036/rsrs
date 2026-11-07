@@ -57,3 +57,20 @@ impl<F: Field> Polynomial<F> {
         Some(Self::new(result))
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::field::Gf256;
+
+    #[test]
+    fn remainder() {
+        let p = Polynomial::new(vec![Gf256(1), Gf256(2), Gf256(3)]);
+        let divisor = Polynomial::new(vec![Gf256(5), Gf256(7)]);
+        let product = p.multiply(&divisor);
+        assert_eq!(product.remainder(&divisor).unwrap().degree(), None);
+        assert_eq!(p.remainder(&product), Some(p.clone()));
+        assert_eq!(p.remainder(&Polynomial::new(vec![])), None);
+        assert_eq!(Polynomial::new(vec![Gf256(0), Gf256(1)]).degree(), Some(0));
+    }
+}
